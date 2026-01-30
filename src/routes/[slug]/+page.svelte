@@ -31,11 +31,6 @@
             </section>
 
             <button>Kosárba</button>
-
-            <section class="w-70">
-                <h3>Leiras:</h3>
-                <p class="text-center p-4">jfdfhadfhuhhgshgfuiohsgo</p>
-            </section>
         </div>
     </div>
 </section>
