@@ -2,14 +2,33 @@
     let userState = 'login';
 	let userEmail = '';
 	let userLoading = true;
+	let error = '';
 
+	function sleep(ms=2000) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+	}
 
-	let loginEmail = () => {
+	let loginEmail = async () => {
 		userLoading = false;
 		
+		const response = await fetch('/login', {
+			method: 'POST',
+			body: JSON.stringify({  'message':'email', 'me':userEmail }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 
-		userState = 'code';
-		userLoading = true;
+		const data = await response.json();
+		if (data.email == userEmail)
+		{
+			userState = 'code'
+			userLoading = true
+		} else {
+			await sleep()
+			userLoading = true
+			error = data.error
+		}
 
 
 	}
@@ -33,6 +52,7 @@
 			  items-center" action="">
 				<p>Kérlem, írja be az e-mail címed a továbblépéshez</p>
 					<input bind:value={userEmail} id="emailInput" name="email" type="email" placeholder="Email" required>
+					<p class='absolute top-71 left-10 text-red-500'>{error}</p>
 				{#if userLoading}
 					<button class="flex w-40 h-10 items-center justify-center gap-2  cursor-pointer
 					bg-black text-white" type="submit">Tovább 
@@ -65,7 +85,7 @@
 			</section>
 		{:else if userState == 'logedd'}
 			<section>
-				<h2>{userEmail}Example@mail.com</h2>
+				<h2>{userEmail}</h2>
 				<ul>
 					<li><a href="profile">Profil / Beállítások</a></li>
 					<li><a href="orders">Rendelések</a></li>

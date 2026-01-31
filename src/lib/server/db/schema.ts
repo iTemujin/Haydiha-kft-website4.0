@@ -2,6 +2,7 @@ import { pgTable, integer, varchar } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
     email: varchar({ length: 50 }).unique().notNull(),
+    code: varchar({ length: 4 }).notNull(),
     role: varchar().default("customer"),
     session: varchar().unique()
 });
