@@ -1,19 +1,38 @@
 <script>
     let userState = 'login';
 	let userEmail = '';
-	let userLoading = true;
+	let code = '';
+	let userLoading = false;
 	let error = '';
 
+	let role = false
+	
 	function sleep(ms=2000) {
 	return new Promise(resolve => setTimeout(resolve, ms));
-	}
+	};
 
-	let loginEmail = async () => {
+
+	const autoLogin = async () => {
+	const response = await fetch('/login', {
+		method: 'GET'
+	});
+	const data = await response.json();
+	if (!data.login) {
+		userLoading = true;
+		return false
+	}
+	userLoading = true;
+	role = data.role
+	userState = 'logedd'
+	};
+
+
+	const loginEmail = async () => {
 		userLoading = false;
 		
 		const response = await fetch('/login', {
 			method: 'POST',
-			body: JSON.stringify({  'message':'email', 'me':userEmail }),
+			body: JSON.stringify({  message: 'email', email: userEmail }),
 			headers: {
 				'Content-Type': 'application/json'
 			}
@@ -22,23 +41,41 @@
 		const data = await response.json();
 		if (data.email == userEmail)
 		{
-			userState = 'code'
+			error = ''
 			userLoading = true
+			userState = 'code'
 		} else {
 			await sleep()
 			userLoading = true
 			error = data.error
 		}
-
-
 	}
 
-	let loginPassword = () => {
+	const loginPassword = async () => {
 		userLoading = false;
 		
+		const  response = await fetch('/login', {
+			method: 'POST',
+			body: JSON.stringify({ message: 'code', email: userEmail, code: code }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 
-		userState = 'logedd';
-		userLoading = true;
+		const data = await response.json()
+		if (data.email == userEmail)
+		{
+			error = ''
+			userLoading = true
+			userState = 'logedd'
+		} else if (data.email == 'seller' ) 
+		{
+			window.location.href = data.redirect
+		} else {
+			await sleep()
+			userLoading = true
+			error = data.error
+		}
 	}
 
 </script>
@@ -70,7 +107,8 @@
 				<h2 class="top-2 mb-4">Hitelesítés</h2>
 				<form on:submit|preventDefault={loginPassword} class="flex flex-col gap-5" action="">
 					<p>Kérlem, írja be az e-mailben kapott kódot ({userEmail})</p>
-						<input id="code" name="code" type="code" placeholder="Kódot" required>
+						<input bind:value={code} id="code" name="code" type="code" placeholder="Kódot" required>
+						<p class='absolute top-68 left-10 text-red-500'>{error}</p>
 					{#if userLoading}
 						<button class="flex w-40 h-10 items-center justify-center gap-2 cursor-pointer
 						bg-black text-white" type="submit">Belépés 
@@ -98,5 +136,9 @@
 		{:else}
 		<h2>Hiba</h2>
 		<p>Varatlan hiba. Az oldal 2 masodperc mulva ujra indul.</p>
+		
 		{/if}
+		
 	</div>
+
+{autoLogin()}
