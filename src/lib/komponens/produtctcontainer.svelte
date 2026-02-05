@@ -1,5 +1,9 @@
 <script>
     import Card from '$lib/komponens/card.svelte'
+
+    const productsGet = async () => {
+        const response = await fetch("")
+    }
 </script>
 
 

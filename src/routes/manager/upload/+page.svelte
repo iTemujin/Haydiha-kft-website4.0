@@ -1,3 +1,14 @@
+<script>
+    let name = '';
+    let category = [];
+    let price = 0;
+    let discount = 0;
+    let img = '';
+
+    let sizes = [{}];
+
+</script>
+
 <section class="absolute z-200 bg-white top-0 left-0 p-3">
     <h2 class="m-3" >Uj termek hozzaadasa</h2>
 
